@@ -8,27 +8,28 @@ import {
   TextField,
 } from "@material-ui/core";
 import { useEffect, useState } from "react";
-import { DatePicker } from "@material-ui/lab";
+import { DatePicker, TimePicker } from "@material-ui/lab";
 
-export default function TaskModal({
-  open,
-  tarefa,
-  handleClose,
-  onSalvar,
-}) {
+export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
   const [titulo, setTitulo] = useState("");
   const [data, setData] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [inicio, setInicio] = useState("");
+  const [fim, setFim] = useState("");
 
   const onSubmit = () => {
     onSalvar({
       titulo,
       data,
       descricao,
+      inicio,
+      fim,
     });
     setTitulo("");
     setData("");
     setDescricao("");
+    setInicio("");
+    setFim("");
   };
 
   useEffect(() => {
@@ -36,28 +37,31 @@ export default function TaskModal({
       setTitulo(tarefa.titulo || "");
       setData(tarefa.data || "");
       setDescricao(tarefa.descricao || "");
+      setInicio(tarefa.inicio || "");
+      setFim(tarefa.fim || "");
     }
   }, [tarefa]);
+
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogContent>
         <DialogContentText>Adicione aqui sua tarefa</DialogContentText>
         <TextField
-          sx={{my: 5}}
+          sx={{ my: 2 }}
           autoFocus
           margin="dense"
           id="name"
-          label="Título da tarefa"
+          label="Verbo"
           type="text"
           fullWidth
           variant="standard"
           value={titulo}
-          onChange={titulo => {
-            setTitulo(titulo.target.value)
+          onChange={(titulo) => {
+            setTitulo(titulo.target.value);
           }}
         />
         <TextField
-          sx={{my: 2}}
+          sx={{ my: 2 }}
           margin="dense"
           id="name"
           label="Descrição"
@@ -65,8 +69,8 @@ export default function TaskModal({
           fullWidth
           variant="standard"
           value={descricao}
-          onChange={descricao => {
-            setDescricao(descricao.target.value)
+          onChange={(descricao) => {
+            setDescricao(descricao.target.value);
           }}
         />
         <DatePicker
@@ -74,6 +78,22 @@ export default function TaskModal({
           value={data}
           onChange={(newValue) => {
             setData(newValue.toString());
+          }}
+          renderInput={(params) => <TextField {...params} />}
+        />
+        <TimePicker
+          label="Início"
+          value={inicio}
+          onChange={(newValue) => {
+            setInicio(newValue);
+          }}
+          renderInput={(params) => <TextField {...params} />}
+        />
+        <TimePicker
+          label="Fim"
+          value={fim}
+          onChange={(newValue) => {
+            setFim(newValue);
           }}
           renderInput={(params) => <TextField {...params} />}
         />
