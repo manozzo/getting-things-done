@@ -10,9 +10,6 @@ import {
 } from "@material-ui/core";
 import { useState } from "react";
 import { MoreVertical } from "react-feather";
-const style = {
-  my: 1,
-};
 
 export default function Tarefa({
   titulo,
@@ -30,10 +27,18 @@ export default function Tarefa({
   const handleClose = () => setAnchorEl(null);
 
   return (
-    <Grid container sx={style} spacing={3}>
-      <Grid item xs={6}>
-        <Card>
+    <Grid container sx={{my: 1}} spacing={3}>
+      <Grid item xs={8}>
+        <Card
+          sx={{
+            boxShadow:
+              "-5px 5px 10px rgba(185, 185, 185, 0.2), 5px -5px 10px rgba(185, 185, 185, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.9), 5px 5px 13px rgba(185, 185, 185, 0.9), inset 1px 1px 2px rgba(255, 255, 255, 0.3), inset -1px -1px 2px rgba(185, 185, 185, 0.5)",
+            p: 1,
+            backgroundColor: "#F4F4F4",
+          }}
+        >
           <CardHeader
+            sx={{ backgroundColor: "#F4F4F4" }}
             action={
               <IconButton aria-label="settings">
                 <MoreVertical
@@ -58,7 +63,7 @@ export default function Tarefa({
             }
             title={`${inicio} - ${fim}`}
           />
-          <CardContent>
+          <CardContent sx={{ backgroundColor: "#F4F4F4" }}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Typography>{descricao}</Typography>
@@ -67,8 +72,8 @@ export default function Tarefa({
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={6}>
-        <Typography fontSize={48}>{titulo}</Typography>
+      <Grid item xs={4}>
+        <Typography variant="h2">{titulo}</Typography>
       </Grid>
     </Grid>
   );

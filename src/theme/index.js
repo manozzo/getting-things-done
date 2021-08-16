@@ -4,15 +4,14 @@ import { ptBR } from "@material-ui/core/locale";
 export const theme = createTheme(
   {
     palette: {
-      background: {
-        default: "#F4F6F8",
-        paper: "#F4F6F8",
-      },
       mode: "light",
     },
     typography: {
       fontFamily: ["Arimo"],
     },
+    shape: {
+      borderRadius: 20
+    }
   },
   ptBR
 );
