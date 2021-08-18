@@ -4,39 +4,45 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
+  DialogTitle,
   TextField,
 } from "@material-ui/core";
 import { useEffect, useState } from "react";
 import { DatePicker, TimePicker } from "@material-ui/lab";
 
 export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
+  let id = "";
   const [titulo, setTitulo] = useState("");
-  const [data, setData] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [data, setData] = useState("");
   const [inicio, setInicio] = useState("");
   const [fim, setFim] = useState("");
 
   const onSubmit = () => {
-    onSalvar({
-      titulo,
-      data,
-      descricao,
-      inicio,
-      fim,
-    });
-    setTitulo("");
-    setData("");
-    setDescricao("");
-    setInicio("");
-    setFim("");
+    if ((titulo, descricao, data, inicio, fim) === "") {
+      alert("PREENCHA TODOS OS CAMPOS!!!");
+    } else {
+      onSalvar({
+        id,
+        titulo,
+        descricao,
+        data,
+        inicio,
+        fim,
+      });
+      setTitulo("");
+      setDescricao("");
+      setData("");
+      setInicio("");
+      setFim("");
+    }
   };
 
   useEffect(() => {
     if (tarefa) {
       setTitulo(tarefa.titulo || "");
-      setData(tarefa.data || "");
       setDescricao(tarefa.descricao || "");
+      setData(tarefa.data || "");
       setInicio(tarefa.inicio || "");
       setFim(tarefa.fim || "");
     }
@@ -44,13 +50,13 @@ export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
 
   return (
     <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>Adicione aqui sua tarefa</DialogTitle>
       <DialogContent>
-        <DialogContentText>Adicione aqui sua tarefa</DialogContentText>
         <TextField
-          sx={{ my: 2 }}
+          sx={{ mt: 2 }}
           autoFocus
           margin="dense"
-          id="name"
+          id="titulo"
           label="Verbo"
           type="text"
           fullWidth
@@ -61,9 +67,9 @@ export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
           }}
         />
         <TextField
-          sx={{ my: 2 }}
+          sx={{ my: 3 }}
           margin="dense"
-          id="name"
+          id="descricao"
           label="Descrição"
           type="text"
           fullWidth
@@ -77,9 +83,9 @@ export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
           label="Data"
           value={data}
           onChange={(newValue) => {
-            setData(newValue.toString());
+            setData(newValue);
           }}
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={(params) => <TextField sx={{ mt: 2 }} {...params} />}
         />
         <TimePicker
           label="Início"
@@ -87,7 +93,7 @@ export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
           onChange={(newValue) => {
             setInicio(newValue);
           }}
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={(params) => <TextField sx={{ mt: 2 }} {...params} />}
         />
         <TimePicker
           label="Fim"
@@ -95,7 +101,7 @@ export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
           onChange={(newValue) => {
             setFim(newValue);
           }}
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={(params) => <TextField sx={{ mt: 2 }} {...params} />}
         />
       </DialogContent>
       <DialogActions>
