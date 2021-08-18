@@ -4,6 +4,9 @@ import { ptBR } from "@material-ui/core/locale";
 export const theme = createTheme(
   {
     palette: {
+      background: {
+        default: "#EEECEC",
+      },
       mode: "light",
     },
     typography: {
