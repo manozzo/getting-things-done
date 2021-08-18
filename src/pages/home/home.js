@@ -28,6 +28,7 @@ const meses = [
 
 export default function Home() {
   const paper = {
+    height: "100vh",
     p: 1,
     m: 0.5,
     backgroundColor: "#EEECEC",
@@ -51,24 +52,24 @@ export default function Home() {
     {
       id: 1,
       titulo: "study",
-      data: "03/08/2021",
       descricao: "banana",
+      data: "03/08/2021",
       inicio: "8:00",
       fim: "12:00",
     },
     {
       id: 2,
       titulo: "lunch",
-      data: "10/08/2021",
       descricao: "melão",
+      data: "10/08/2021",
       inicio: "13:00",
       fim: "14:00",
     },
     {
       id: 3,
       titulo: "play",
-      data: "17/08/2021",
       descricao: "ronaldo",
+      data: "17/08/2021",
       inicio: "15:00",
       fim: "16:00",
     },
@@ -92,7 +93,8 @@ export default function Home() {
       return el.data === dataFiltroString;
     });
     setListaFiltrada(lista);
-  }, [dataFiltro]);
+    console.table(listaTarefas);
+  }, [dataFiltro, listaTarefas]);
 
   useEffect(() => {
     const token = localStorage.getItem("appToken");
@@ -108,19 +110,26 @@ export default function Home() {
 
   const handleClose = () => setOpen(false);
 
-  const onExcluir = (index) => () => {
-    const tarefa = [...listaTarefas];
-    tarefa.splice(index, 1);
-    setListaTarefas(tarefa);
+  const onExcluir = (id) => () => {
+    const tarefaExcluida = listaTarefas.filter((el) => {
+      return el.id === id;
+    });
+    let listaExcluida = listaTarefas.filter((el) => el !== tarefaExcluida[0]);
+    setListaTarefas(listaExcluida);
   };
 
-  const onEditar = (index) => () => {
-    const tarefa = listaTarefas[index];
-    setTarefaSelecionada(tarefa);
+  const onEditar = (id) => () => {
+    const tarefa = listaTarefas.filter((el) => {
+      return el.id === id;
+    });
+    setTarefaSelecionada(tarefa[0]);
     setOpen(true);
   };
 
   const onSalvar = (tarefa) => {
+    if (tarefa.data) {
+      tarefa.data = tarefa.data.toLocaleDateString("pt-BR");
+    }
     if (tarefa.inicio) {
       tarefa.inicio = tarefa.inicio.toString().substring(16, 21);
     }
@@ -135,10 +144,9 @@ export default function Home() {
       );
       novaLista[index] = tarefa;
     } else {
-      tarefa.id = listaTarefas.length + 1;
+      tarefa.id = Date.now();
       novaLista = [...listaTarefas, tarefa];
     }
-
     setListaTarefas(novaLista);
     setTarefaSelecionada({});
     setOpen(false);
@@ -149,23 +157,23 @@ export default function Home() {
   }
 
   let content = null;
-  if (listaFiltrada.length == 0) {
+  if (listaFiltrada.length === 0) {
     content = (
-      <Typography variant="h3" sx={{ mt: 3 }}>
-        Não tem tarefa hoje
+      <Typography variant="h4" sx={{ mt: 3 }}>
+        Não existem tarefas nessa data.
       </Typography>
     );
   } else {
-    content = listaFiltrada.map((tarefa, index) => (
+    content = listaFiltrada.map((tarefa) => (
       <Tarefa
         key={tarefa.id}
         titulo={tarefa.titulo}
+        descricao={tarefa.descricao}
+        data={tarefa.data}
         inicio={tarefa.inicio}
         fim={tarefa.fim}
-        data={tarefa.data}
-        descricao={tarefa.descricao}
-        editar={onEditar(index)}
-        excluir={onExcluir(index)}
+        editar={onEditar(tarefa.id)}
+        excluir={onExcluir(tarefa.id)}
       ></Tarefa>
     ));
   }
