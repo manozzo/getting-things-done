@@ -45,8 +45,8 @@ export default function Home() {
   const [toLogin, setToLogin] = useState(false);
   const [open, setOpen] = useState(false);
   const [tarefaSelecionada, setTarefaSelecionada] = useState({});
-  const [dataAtual] = useState(new Date().getDate());
-  const [mesAtual] = useState(new Date().getMonth());
+  const [dataAtual, setDataAtual] = useState(new Date().getDate());
+  const [mesAtual, setMesAtual] = useState(new Date().getMonth());
   const [dataFiltro, setDataFiltro] = useState(new Date());
   const [listaTarefas, setListaTarefas] = useState([
     {
@@ -56,6 +56,7 @@ export default function Home() {
       data: "03/08/2021",
       inicio: "8:00",
       fim: "12:00",
+      isComplete: false,
     },
     {
       id: 2,
@@ -64,6 +65,7 @@ export default function Home() {
       data: "10/08/2021",
       inicio: "13:00",
       fim: "14:00",
+      isComplete: false,
     },
     {
       id: 3,
@@ -72,6 +74,7 @@ export default function Home() {
       data: "17/08/2021",
       inicio: "15:00",
       fim: "16:00",
+      isComplete: true,
     },
   ]);
 
@@ -93,6 +96,8 @@ export default function Home() {
       return el.data === dataFiltroString;
     });
     setListaFiltrada(lista);
+    setDataAtual(dataFiltro.getDate());
+    setMesAtual(dataFiltro.getMonth());
     console.table(listaTarefas);
   }, [dataFiltro, listaTarefas]);
 
@@ -172,6 +177,7 @@ export default function Home() {
         data={tarefa.data}
         inicio={tarefa.inicio}
         fim={tarefa.fim}
+        isComplete={tarefa.isComplete}
         editar={onEditar(tarefa.id)}
         excluir={onExcluir(tarefa.id)}
       ></Tarefa>
