@@ -1,3 +1,4 @@
+import { format, formatISO } from "date-fns";
 import { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { Icone, Tarefa, TaskModal } from "../../components";
@@ -7,9 +8,9 @@ import {
   Typography,
   Box,
   Paper,
-  TextField,
+  InputBase,
 } from "@material-ui/core";
-import { DatePicker } from "@material-ui/lab";
+import { MobileDatePicker } from "@material-ui/lab";
 
 const meses = [
   "jan",
@@ -27,11 +28,11 @@ const meses = [
 ];
 
 export default function Home() {
+
   const paper = {
     height: "100vh",
     p: 1,
-    m: 0.5,
-    backgroundColor: "#EEECEC",
+    m: 2,
     boxShadow:
       "-5px 5px 10px rgba(185, 185, 185, 0.2), 5px -5px 10px rgba(185, 185, 185, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.9), 5px 5px 13px rgba(185, 185, 185, 0.9), inset 1px 1px 2px rgba(255, 255, 255, 0.3), inset -1px -1px 2px rgba(185, 185, 185, 0.5)",
   };
@@ -45,7 +46,8 @@ export default function Home() {
   const [toLogin, setToLogin] = useState(false);
   const [open, setOpen] = useState(false);
   const [tarefaSelecionada, setTarefaSelecionada] = useState({});
-  const [dataAtual, setDataAtual] = useState(new Date().getDate());
+  //const [dataAtual, setDataAtual] = useState(new Date().getDate());
+  const [dataAtual, setDataAtual] = useState(formatISO(new Date(), 'd'));
   const [mesAtual, setMesAtual] = useState(new Date().getMonth());
   const [dataFiltro, setDataFiltro] = useState(new Date());
   const [listaTarefas, setListaTarefas] = useState([
@@ -53,7 +55,7 @@ export default function Home() {
       id: 1,
       titulo: "study",
       descricao: "banana",
-      data: "03/08/2021",
+      data: "2021-08-03",
       inicio: "8:00",
       fim: "12:00",
       isComplete: false,
@@ -62,7 +64,7 @@ export default function Home() {
       id: 2,
       titulo: "lunch",
       descricao: "melão",
-      data: "10/08/2021",
+      data: "2021-08-10",
       inicio: "13:00",
       fim: "14:00",
       isComplete: false,
@@ -71,7 +73,7 @@ export default function Home() {
       id: 3,
       titulo: "play",
       descricao: "ronaldo",
-      data: "17/08/2021",
+      data: "2021-08-17",
       inicio: "15:00",
       fim: "16:00",
       isComplete: true,
@@ -91,14 +93,15 @@ export default function Home() {
   setInterval(newTime, 1000);
 
   useEffect(() => {
-    let dataFiltroString = dataFiltro.toLocaleDateString("pt-BR");
+    //let dataFiltroString = dataFiltro.toLocaleDateString("pt-BR");
+    let dataFiltroString = formatISO(dataFiltro, { representation: 'date' })
     let lista = listaTarefas.filter((el) => {
       return el.data === dataFiltroString;
     });
     setListaFiltrada(lista);
-    setDataAtual(dataFiltro.getDate());
+    setDataAtual(format(dataFiltro, 'd'));
     setMesAtual(dataFiltro.getMonth());
-    console.table(listaTarefas);
+    console.table(listaTarefas)
   }, [dataFiltro, listaTarefas]);
 
   useEffect(() => {
@@ -132,9 +135,6 @@ export default function Home() {
   };
 
   const onSalvar = (tarefa) => {
-    if (tarefa.data) {
-      tarefa.data = tarefa.data.toLocaleDateString("pt-BR");
-    }
     if (tarefa.inicio) {
       tarefa.inicio = tarefa.inicio.toString().substring(16, 21);
     }
@@ -149,12 +149,23 @@ export default function Home() {
       );
       novaLista[index] = tarefa;
     } else {
-      tarefa.id = Date.now();
       novaLista = [...listaTarefas, tarefa];
     }
     setListaTarefas(novaLista);
     setTarefaSelecionada({});
     setOpen(false);
+  };
+
+  const onConcluir = (id) => () => {
+    const tarefa = listaTarefas.filter((el) => {
+      return el.id === id;
+    });
+    if (tarefa[0].isComplete) {
+      tarefa[0].isComplete = false;
+    } else {
+      tarefa[0].isComplete = true;
+    }
+    setListaTarefas([...listaTarefas]);
   };
 
   if (toLogin) {
@@ -171,7 +182,7 @@ export default function Home() {
   } else {
     content = listaFiltrada.map((tarefa) => (
       <Tarefa
-        key={tarefa.id}
+        id={tarefa.id}
         titulo={tarefa.titulo}
         descricao={tarefa.descricao}
         data={tarefa.data}
@@ -180,6 +191,7 @@ export default function Home() {
         isComplete={tarefa.isComplete}
         editar={onEditar(tarefa.id)}
         excluir={onExcluir(tarefa.id)}
+        concluir={onConcluir(tarefa.id)}
       ></Tarefa>
     ));
   }
@@ -231,13 +243,13 @@ export default function Home() {
                   alignItems: "center",
                 }}
               >
-                <DatePicker
+                <MobileDatePicker
                   label="Selecione a data"
                   value={dataFiltro}
                   onChange={(newValue) => {
                     setDataFiltro(newValue);
                   }}
-                  renderInput={(params) => <TextField {...params} />}
+                  renderInput={(params) => <InputBase sx={{ml: 5}} {...params} />}
                 />
               </Box>
               <Box

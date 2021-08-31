@@ -9,14 +9,16 @@ import {
 } from "@material-ui/core";
 import { useEffect, useState } from "react";
 import { DatePicker, TimePicker } from "@material-ui/lab";
+import { formatISO } from "date-fns";
 
 export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
-  let id = "";
+  let id = Date.now();
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [data, setData] = useState("");
   const [inicio, setInicio] = useState("");
   const [fim, setFim] = useState("");
+  let isComplete = false;
 
   const onSubmit = () => {
     if ((titulo, descricao, data, inicio, fim) === "") {
@@ -29,6 +31,7 @@ export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
         data,
         inicio,
         fim,
+        isComplete
       });
       setTitulo("");
       setDescricao("");
@@ -83,7 +86,9 @@ export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
           label="Data"
           value={data}
           onChange={(newValue) => {
-            setData(newValue);
+            let dateFormatted = formatISO(newValue, { representation:'date' });
+            setData(dateFormatted);
+            console.log(dateFormatted)
           }}
           renderInput={(params) => <TextField sx={{ mt: 2 }} {...params} />}
         />
