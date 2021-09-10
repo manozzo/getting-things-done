@@ -28,9 +28,9 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex justify-center items-center">
-      <div className="container mx-auto flex-col w-44 h-24">
-        <fieldset className="container mx-auto flex my-3">
+    <form onSubmit={onSubmit}>
+      <div>
+        <fieldset>
           <Icone name="user" />
           <label htmlFor="email"></label>
           <input
@@ -39,10 +39,9 @@ export default function LoginForm() {
             placeholder="username"
             value={email}
             onChange={onChangeEmail}
-            className="rounded-md bg-loginInput shadow-me w-52 h-8 pl-2 ml-1"
           ></input>
         </fieldset>
-        <fieldset className="container mx-auto flex w-full">
+        <fieldset>
           <Icone name="password" />
           <label htmlFor="password"></label>
           <input
@@ -51,12 +50,11 @@ export default function LoginForm() {
             placeholder="password"
             value={password}
             onChange={onChangePassword}
-            className="rounded-md bg-loginInput shadow-me w-52 h-8 pl-2 ml-1"
           ></input>
         </fieldset>
       </div>
-      <button className="bg-loginInput shadow-me rounded-xl w-9 h-20 flex items-center justify-center ml-6">
-        <Icone twclass="w-8" name="enter"/>
+      <button>
+        <Icone name="enter" />
       </button>
     </form>
   );

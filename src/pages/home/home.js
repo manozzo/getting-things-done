@@ -28,7 +28,6 @@ const meses = [
 ];
 
 export default function Home() {
-
   const paper = {
     height: "100vh",
     p: 1,
@@ -46,39 +45,46 @@ export default function Home() {
   const [toLogin, setToLogin] = useState(false);
   const [open, setOpen] = useState(false);
   const [tarefaSelecionada, setTarefaSelecionada] = useState({});
-  //const [dataAtual, setDataAtual] = useState(new Date().getDate());
-  const [dataAtual, setDataAtual] = useState(formatISO(new Date(), 'd'));
+  const [dataAtual, setDataAtual] = useState(formatISO(new Date(), "d"));
   const [mesAtual, setMesAtual] = useState(new Date().getMonth());
   const [dataFiltro, setDataFiltro] = useState(new Date());
-  const [listaTarefas, setListaTarefas] = useState([
-    {
-      id: 1,
-      titulo: "study",
-      descricao: "banana",
-      data: "2021-08-03",
-      inicio: "8:00",
-      fim: "12:00",
-      isComplete: false,
-    },
-    {
-      id: 2,
-      titulo: "lunch",
-      descricao: "melão",
-      data: "2021-08-10",
-      inicio: "13:00",
-      fim: "14:00",
-      isComplete: false,
-    },
-    {
-      id: 3,
-      titulo: "play",
-      descricao: "ronaldo",
-      data: "2021-08-17",
-      inicio: "15:00",
-      fim: "16:00",
-      isComplete: true,
-    },
-  ]);
+  const [listaTarefas, setListaTarefas] = useState(
+    JSON.parse(localStorage.tasks || "[]").map((el) => {
+      el.inicio = new Date(el.inicio);
+      el.fim = new Date(el.fim);
+      return el;
+    })
+  );
+
+  // useState([
+  //   {
+  //     id: 1,
+  //     titulo: "study",
+  //     descricao: "banana",
+  //     data: "2021-08-03",
+  //     inicio: "8:00",
+  //     fim: "12:00",
+  //     isComplete: false,
+  //   },
+  //   {
+  //     id: 2,
+  //     titulo: "lunch",
+  //     descricao: "melão",
+  //     data: "2021-08-10",
+  //     inicio: "13:00",
+  //     fim: "14:00",
+  //     isComplete: false,
+  //   },
+  //   {
+  //     id: 3,
+  //     titulo: "play",
+  //     descricao: "ronaldo",
+  //     data: "2021-08-17",
+  //     inicio: "15:00",
+  //     fim: "16:00",
+  //     isComplete: true,
+  //   },
+  // ]);
 
   const [listaFiltrada, setListaFiltrada] = useState(listaTarefas);
 
@@ -94,14 +100,14 @@ export default function Home() {
 
   useEffect(() => {
     //let dataFiltroString = dataFiltro.toLocaleDateString("pt-BR");
-    let dataFiltroString = formatISO(dataFiltro, { representation: 'date' })
+    let dataFiltroString = formatISO(dataFiltro, { representation: "date" });
     let lista = listaTarefas.filter((el) => {
       return el.data === dataFiltroString;
     });
     setListaFiltrada(lista);
-    setDataAtual(format(dataFiltro, 'd'));
+    setDataAtual(format(dataFiltro, "d"));
     setMesAtual(dataFiltro.getMonth());
-    console.table(listaTarefas)
+    console.table(listaTarefas);
   }, [dataFiltro, listaTarefas]);
 
   useEffect(() => {
@@ -135,12 +141,12 @@ export default function Home() {
   };
 
   const onSalvar = (tarefa) => {
-    if (tarefa.inicio) {
-      tarefa.inicio = tarefa.inicio.toString().substring(16, 21);
-    }
-    if (tarefa.fim) {
-      tarefa.fim = tarefa.fim.toString().substring(16, 21);
-    }
+    // if (tarefa.inicio) {
+    //   tarefa.inicio = tarefa.inicio.toString().substring(16, 21);
+    // }
+    // if (tarefa.fim) {
+    //   tarefa.fim = tarefa.fim.toString().substring(16, 21);
+    // }
     let novaLista = [];
     if (tarefaSelecionada.id) {
       novaLista = [...listaTarefas];
@@ -152,6 +158,7 @@ export default function Home() {
       novaLista = [...listaTarefas, tarefa];
     }
     setListaTarefas(novaLista);
+    localStorage.tasks = JSON.stringify(novaLista);
     setTarefaSelecionada({});
     setOpen(false);
   };
@@ -249,7 +256,9 @@ export default function Home() {
                   onChange={(newValue) => {
                     setDataFiltro(newValue);
                   }}
-                  renderInput={(params) => <InputBase sx={{ml: 5}} {...params} />}
+                  renderInput={(params) => (
+                    <InputBase sx={{ ml: 5 }} {...params} />
+                  )}
                 />
               </Box>
               <Box

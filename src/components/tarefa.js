@@ -76,7 +76,7 @@ export default function Tarefa({
                 </IconButton>
               </>
             }
-            title={`${inicio} - ${fim}`}
+            title={`${inicio.toString().substring(16, 21)} - ${fim.toString().substring(16, 21)}`}
           />
 
           <CardContent>

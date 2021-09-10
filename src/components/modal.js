@@ -10,6 +10,8 @@ import {
 import { useEffect, useState } from "react";
 import { DatePicker, TimePicker } from "@material-ui/lab";
 import { formatISO } from "date-fns";
+import ptBR from "date-fns/locale/pt-BR";
+
 
 export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
   let id = Date.now();
@@ -28,7 +30,7 @@ export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
         id,
         titulo,
         descricao,
-        data,
+        data: formatISO(data, { representation:'date' }),
         inicio,
         fim,
         isComplete
@@ -83,12 +85,11 @@ export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
           }}
         />
         <DatePicker
+          mask={ptBR}
           label="Data"
           value={data}
           onChange={(newValue) => {
-            let dateFormatted = formatISO(newValue, { representation:'date' });
-            setData(dateFormatted);
-            console.log(dateFormatted)
+            setData(newValue);
           }}
           renderInput={(params) => <TextField sx={{ mt: 2 }} {...params} />}
         />
@@ -97,6 +98,7 @@ export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
           value={inicio}
           onChange={(newValue) => {
             setInicio(newValue);
+            console.log(newValue);
           }}
           renderInput={(params) => <TextField sx={{ mt: 2 }} {...params} />}
         />
