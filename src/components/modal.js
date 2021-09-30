@@ -1,89 +1,153 @@
 import * as React from "react";
+import axios from "../utils/axios";
 import {
-  Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
+  TextField as MuiTextField,
+  Button,
 } from "@material-ui/core";
-import { useEffect, useState } from "react";
+import { TextField } from "formik-material-ui";
 import { DatePicker, TimePicker } from "@material-ui/lab";
-import { formatISO } from "date-fns";
-import ptBR from "date-fns/locale/pt-BR";
-
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
+import formatISO from "date-fns/formatISO";
 
 export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
-  let id = Date.now();
-  const [titulo, setTitulo] = useState("");
-  const [descricao, setDescricao] = useState("");
-  const [data, setData] = useState("");
-  const [inicio, setInicio] = useState("");
-  const [fim, setFim] = useState("");
-  let isComplete = false;
+  const TaskSchema = Yup.object().shape({
+    title: Yup.string()
+      .min(2, "Too Short!")
+      .max(20, "Too Long!")
+      .required("Required"),
+  });
 
-  const onSubmit = () => {
-    if ((titulo, descricao, data, inicio, fim) === "") {
-      alert("PREENCHA TODOS OS CAMPOS!!!");
-    } else {
-      onSalvar({
-        id,
-        titulo,
-        descricao,
-        data: formatISO(data, { representation:'date' }),
-        inicio,
-        fim,
-        isComplete
-      });
-      setTitulo("");
-      setDescricao("");
-      setData("");
-      setInicio("");
-      setFim("");
-    }
+  const defaultValues = {
+    user_id: 1,
+    title: "",
+    description: "",
+    date: null,
+    task_start: null,
+    task_end: null,
   };
 
-  useEffect(() => {
-    if (tarefa) {
-      setTitulo(tarefa.titulo || "");
-      setDescricao(tarefa.descricao || "");
-      setData(tarefa.data || "");
-      setInicio(tarefa.inicio || "");
-      setFim(tarefa.fim || "");
-    }
-  }, [tarefa]);
+  const onEditTaskValues = {
+    user_id: tarefa.user_id,
+    title: tarefa.title,
+    description: tarefa.description,
+    date: tarefa.date,
+    task_start: tarefa.task_start,
+    task_end: tarefa.task_end,
+  };
 
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Adicione aqui sua tarefa</DialogTitle>
       <DialogContent>
-        <TextField
-          sx={{ mt: 2 }}
-          autoFocus
-          margin="dense"
-          id="titulo"
-          label="Verbo"
-          type="text"
-          fullWidth
-          variant="standard"
-          value={titulo}
-          onChange={(titulo) => {
-            setTitulo(titulo.target.value);
+        <Formik
+          initialValues={tarefa.id ? onEditTaskValues : defaultValues}
+          validationSchema={TaskSchema}
+          onSubmit={async (values, { setSubmitting, resetForm }) => {
+            try {
+              let formData = new FormData();
+              for (let value in values) {
+                if (
+                  value === "date" ||
+                  value === "task_start" ||
+                  value === "task_end"
+                ) {
+                  formData.append(
+                    value,
+                    formatISO(values[value], { representation: "complete" })
+                  );
+                } else {
+                  formData.append(value, values[value]);
+                }
+              }
+              let response;
+              if (!tarefa.id) {
+                response = await axios.post(`api/task/save`, formData);
+              } else {
+                response = await axios.post(`api/task/edit/${tarefa.id}`, formData);
+              }
+              setSubmitting(false);
+              resetForm({});
+              handleClose();
+            } catch (error) {
+              console.error(error);
+            }
           }}
-        />
-        <TextField
-          sx={{ my: 3 }}
-          margin="dense"
-          id="descricao"
-          label="Descrição"
-          type="text"
-          fullWidth
-          variant="standard"
-          value={descricao}
-          onChange={(descricao) => {
-            setDescricao(descricao.target.value);
-          }}
-        />
+        >
+          {({ submitForm, isSubmitting, setFieldValue, values }) => (
+            <Form>
+              <Field
+                component={TextField}
+                name="title"
+                type="text"
+                label="Titulo"
+                sx={{ mt: 2 }}
+              />
+              <Field
+                component={TextField}
+                name="description"
+                type="text"
+                label="Descrição"
+                sx={{ mt: 2 }}
+              />
+              <DatePicker
+                label="Data"
+                name={"date"}
+                value={values.date}
+                onChange={(newValue) => {
+                  setFieldValue("date", newValue);
+                }}
+                renderInput={(params) => (
+                  <MuiTextField sx={{ mt: 2 }} {...params} />
+                )}
+              />
+              <TimePicker
+                label="Início"
+                name={"task_start"}
+                value={values.task_start}
+                onChange={(newValue) => {
+                  setFieldValue("task_start", newValue);
+                }}
+                renderInput={(params) => (
+                  <MuiTextField sx={{ mt: 2 }} {...params} />
+                )}
+              />
+              <TimePicker
+                label="Fim"
+                name={"task_end"}
+                value={values.task_end}
+                onChange={(newValue) => {
+                  setFieldValue("task_end", newValue);
+                }}
+                renderInput={(params) => (
+                  <MuiTextField sx={{ mt: 2 }} {...params} />
+                )}
+              />
+
+              <br />
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                startIcon={
+                  isSubmitting ? (
+                    <CircularProgress color="inherit" size="1rem" />
+                  ) : null
+                }
+                disabled={isSubmitting}
+                onClick={submitForm}
+              >
+                Submit
+              </Button>
+            </Form>
+          )}
+        </Formik>
+        {/* 
         <DatePicker
           mask={ptBR}
           label="Data"
@@ -109,11 +173,11 @@ export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
             setFim(newValue);
           }}
           renderInput={(params) => <TextField sx={{ mt: 2 }} {...params} />}
-        />
+        /> */}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={onSubmit}>Salvar</Button>
+        {/* <Button onClick={handleClose}>Cancel</Button>
+        <Button>Salvar</Button> */}
       </DialogActions>
     </Dialog>
   );
