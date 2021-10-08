@@ -3,7 +3,6 @@ import axios from "../utils/axios";
 import {
   CircularProgress,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
   TextField as MuiTextField,
@@ -15,7 +14,7 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import formatISO from "date-fns/formatISO";
 
-export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
+export default function TaskModal({ open, tarefa, handleClose }) {
   const TaskSchema = Yup.object().shape({
     title: Yup.string()
       .min(2, "Too Short!")
@@ -131,6 +130,7 @@ export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
 
               <br />
               <Button
+                sx={{ mt: 2 }}
                 variant="contained"
                 color="primary"
                 type="submit"
@@ -147,38 +147,7 @@ export default function TaskModal({ open, tarefa, handleClose, onSalvar }) {
             </Form>
           )}
         </Formik>
-        {/* 
-        <DatePicker
-          mask={ptBR}
-          label="Data"
-          value={data}
-          onChange={(newValue) => {
-            setData(newValue);
-          }}
-          renderInput={(params) => <TextField sx={{ mt: 2 }} {...params} />}
-        />
-        <TimePicker
-          label="Início"
-          value={inicio}
-          onChange={(newValue) => {
-            setInicio(newValue);
-            console.log(newValue);
-          }}
-          renderInput={(params) => <TextField sx={{ mt: 2 }} {...params} />}
-        />
-        <TimePicker
-          label="Fim"
-          value={fim}
-          onChange={(newValue) => {
-            setFim(newValue);
-          }}
-          renderInput={(params) => <TextField sx={{ mt: 2 }} {...params} />}
-        /> */}
       </DialogContent>
-      <DialogActions>
-        {/* <Button onClick={handleClose}>Cancel</Button>
-        <Button>Salvar</Button> */}
-      </DialogActions>
     </Dialog>
   );
 }

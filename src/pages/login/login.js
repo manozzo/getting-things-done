@@ -89,9 +89,9 @@ export default function Login() {
             </Box>  
           </Box>
         </Box>
-        <Box>
-          <Button></Button>
-          <Button></Button>
+        <Box display='flex' justifyContent='center' mt={4}>
+          <Button sx={input}>sign.up</Button>
+          <Button sx={input}>forgot</Button>
           <Button></Button>
         </Box>
       </Container>

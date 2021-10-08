@@ -13,12 +13,6 @@ import {
   InputBase,
 } from "@material-ui/core";
 import { MobileDatePicker } from "@material-ui/lab";
-// import TaskService from '../service/task.service';
-import {
-  deleteTask,
-  getByDate,
-  toggleCompleteTask,
-} from "../../services/task.service";
 
 const meses = [
   "jan",
@@ -57,26 +51,62 @@ export default function Home() {
   const [dataAtual, setDataAtual] = useState(formatISO(new Date(), "d"));
   const [mesAtual, setMesAtual] = useState(new Date().getMonth());
   const [dataFiltro, setDataFiltro] = useState(new Date());
-  const [taskList, setTaskList] = useState([]);
+  const [listaTarefas, setListaTarefas] = useState(
+    JSON.parse(localStorage.tasks || "[]").map((el) => {
+      el.inicio = new Date(el.inicio);
+      el.fim = new Date(el.fim);
+      return el;
+    })
+  );
 
-  //--------------------Abrir e fechar modal--------------
-  const handleOpen = () => {
-    setTarefaSelecionada({});
-    setOpen(!open);
-  };
+  // useState([
+  //   {
+  //     id: 1,
+  //     titulo: "study",
+  //     descricao: "banana",
+  //     data: "2021-08-03",
+  //     inicio: "8:00",
+  //     fim: "12:00",
+  //     isComplete: false,
+  //   },
+  //   {
+  //     id: 2,
+  //     titulo: "lunch",
+  //     descricao: "melão",
+  //     data: "2021-08-10",
+  //     inicio: "13:00",
+  //     fim: "14:00",
+  //     isComplete: false,
+  //   },
+  //   {
+  //     id: 3,
+  //     titulo: "play",
+  //     descricao: "ronaldo",
+  //     data: "2021-08-17",
+  //     inicio: "15:00",
+  //     fim: "16:00",
+  //     isComplete: true,
+  //   },
+  // ]);
+  
+  const getTasksByCreatedDate = useCallback(async () => {
+    try{
+      const response = await axios.get('api/tasks/' + dataFiltro);
 
-  const handleClose = () => {
-    setOpen(false);
-    getTasksByCreatedDate();
-  };
-  //-------------------------------------------------------
+      if(isMountedRef.current){
+        setListaFiltrada(response.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, [isMountedRef, dataFiltro]);
 
   useEffect(() => {
-    setDataAtual(format(dataFiltro, "d"));
-    setMesAtual(dataFiltro.getMonth());
-  }, [dataFiltro]);
+    getTasksByCreatedDate();
+  }, [getTasksByCreatedDate, dataFiltro]);
 
-  //-------------- horário da home screen-------------------
+  const [listaFiltrada, setListaFiltrada] = useState(listaTarefas);
+
   let time = new Date().toLocaleTimeString("pt-BR").slice(0, 5);
   const [horaAtual, setHoraAtual] = useState(time);
 
@@ -86,37 +116,18 @@ export default function Home() {
   };
 
   setInterval(newTime, 1000);
-  //-------------------------------------------------------------
-
-  //------Filtro que busca na API de acordo com o Date Picker-------
-  const getTasksByCreatedDate = useCallback(async () => {
-    try {
-      const { data } = await getByDate(dataFiltro);
-
-      if (isMountedRef.current) {
-        console.table(data);
-        setTaskList(data);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }, [isMountedRef, dataFiltro]);
-
-  //---------------------------------------------------------------
 
   useEffect(() => {
-    getTasksByCreatedDate();
-  }, [getTasksByCreatedDate, dataFiltro]);
-
-  //---------------------------------------------------------------
-
-  const onEditar = (id) => () => {
-    const tarefa = taskList.filter((el) => {
-      return el.id === id;
+    //let dataFiltroString = dataFiltro.toLocaleDateString("pt-BR");
+    let dataFiltroString = formatISO(dataFiltro, { representation: "date" });
+    let lista = listaTarefas.filter((el) => {
+      return el.data === dataFiltroString;
     });
-    setTarefaSelecionada(tarefa[0]);
-    setOpen(true);
-  };
+    setListaFiltrada(lista);
+    setDataAtual(format(dataFiltro, "d"));
+    setMesAtual(dataFiltro.getMonth());
+    console.table(listaTarefas);
+  }, [dataFiltro, listaTarefas]);
 
   useEffect(() => {
     const token = localStorage.getItem("appToken");
@@ -125,27 +136,62 @@ export default function Home() {
     }
   }, []);
 
-  const onExcluir = (id) => async () => {
-    try {
-      const { data } = await deleteTask(id);
-      setTaskList(data);
-    } catch (err) {
-      console.error(err);
-    }
+  const handleOpen = () => {
+    setTarefaSelecionada({});
+    setOpen(!open);
   };
 
-  const onConcluir = (id) => async () => {
-    const tarefa = taskList.findIndex((el) => {
+  const handleClose = () => setOpen(false);
+
+  const onExcluir = (id) => () => {
+    const tarefaExcluida = listaTarefas.filter((el) => {
       return el.id === id;
     });
+    let listaExcluida = listaTarefas.filter((el) => el !== tarefaExcluida[0]);
+    setListaTarefas(listaExcluida);
+  };
 
-    taskList[tarefa].is_completed = !taskList[tarefa].is_completed;
-    setTaskList([...taskList]);
+  const onEditar = (id) => () => {
+    const tarefa = listaTarefas.filter((el) => {
+      return el.id === id;
+    });
+    setTarefaSelecionada(tarefa[0]);
+    setOpen(true);
+  };
 
-    const { data } = await toggleCompleteTask(id);
-    taskList[tarefa] = data;
-    console.table(taskList)
-    setTaskList([...taskList]);
+  const onSalvar = (tarefa) => {
+    // if (tarefa.inicio) {
+    //   tarefa.inicio = tarefa.inicio.toString().substring(16, 21);
+    // }
+    // if (tarefa.fim) {
+    //   tarefa.fim = tarefa.fim.toString().substring(16, 21);
+    // }
+    let novaLista = [];
+    if (tarefaSelecionada.id) {
+      novaLista = [...listaTarefas];
+      const index = listaTarefas.findIndex(
+        (el) => el.id === tarefaSelecionada.id
+      );
+      novaLista[index] = tarefa;
+    } else {
+      novaLista = [...listaTarefas, tarefa];
+    }
+    setListaTarefas(novaLista);
+    localStorage.tasks = JSON.stringify(novaLista);
+    setTarefaSelecionada({});
+    setOpen(false);
+  };
+
+  const onConcluir = (id) => () => {
+    const tarefa = listaTarefas.filter((el) => {
+      return el.id === id;
+    });
+    if (tarefa[0].isComplete) {
+      tarefa[0].isComplete = false;
+    } else {
+      tarefa[0].isComplete = true;
+    }
+    setListaTarefas([...listaTarefas]);
   };
 
   if (toLogin) {
@@ -153,20 +199,25 @@ export default function Home() {
   }
 
   let content = null;
-  if (taskList.length === 0) {
+  if (listaFiltrada.length === 0) {
     content = (
       <Typography variant="h4" sx={{ mt: 3 }}>
         Não existem tarefas nessa data.
       </Typography>
     );
   } else {
-    content = taskList.map((task) => (
+    content = listaFiltrada.map((tarefa) => (
       <Tarefa
-        task={task}
-        key={task.id}
-        editar={onEditar(task.id)}
-        excluir={onExcluir(task.id)}
-        concluir={onConcluir(task.id)}
+        id={tarefa.id}
+        titulo={tarefa.titulo}
+        descricao={tarefa.descricao}
+        data={tarefa.data}
+        inicio={tarefa.inicio}
+        fim={tarefa.fim}
+        isComplete={tarefa.isComplete}
+        editar={onEditar(tarefa.id)}
+        excluir={onExcluir(tarefa.id)}
+        concluir={onConcluir(tarefa.id)}
       ></Tarefa>
     ));
   }
@@ -254,7 +305,7 @@ export default function Home() {
         <TaskModal
           open={open}
           handleClose={handleClose}
-          //onSalvar={onSalvar}
+          onSalvar={onSalvar}
           tarefa={tarefaSelecionada}
         ></TaskModal>
       </Container>

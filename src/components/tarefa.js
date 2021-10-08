@@ -15,13 +15,9 @@ import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import DoneIcon from "@material-ui/icons/Done";
 
 export default function Tarefa({
-  titulo,
-  inicio,
-  fim,
-  descricao,
+  task,
   editar,
   excluir,
-  isComplete,
   concluir,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -36,8 +32,9 @@ export default function Tarefa({
       <Grid item xs={8}>
         <Card
           sx={{
-            boxShadow:
-              isComplete ? "inset 5px 5px 10px #bebebe, inset -5px -5px 10px #ffffff" : "-5px 5px 10px rgba(185, 185, 185, 0.2), 5px -5px 10px rgba(185, 185, 185, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.9), 5px 5px 13px rgba(185, 185, 185, 0.9), inset 1px 1px 2px rgba(255, 255, 255, 0.3), inset -1px -1px 2px rgba(185, 185, 185, 0.5)",
+            boxShadow: task.is_completed
+              ? "inset 5px 5px 10px #bebebe, inset -5px -5px 10px #ffffff"
+              : "-5px 5px 10px rgba(185, 185, 185, 0.2), 5px -5px 10px rgba(185, 185, 185, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.9), 5px 5px 13px rgba(185, 185, 185, 0.9), inset 1px 1px 2px rgba(255, 255, 255, 0.3), inset -1px -1px 2px rgba(185, 185, 185, 0.5)",
             p: 1,
             backgroundColor: "#E0E0E0",
           }}
@@ -69,27 +66,37 @@ export default function Tarefa({
                   <Checkbox
                     disableRipple
                     onChange={concluir}
-                    checked={isComplete}
+                    checked={task.is_completed}
                     icon={<RadioButtonUncheckedIcon />}
-                    checkedIcon={<DoneIcon color="success"/>}
+                    checkedIcon={<DoneIcon color="success" />}
                   />
                 </IconButton>
               </>
             }
-            title={`${inicio.toString().substring(16, 21)} - ${fim.toString().substring(16, 21)}`}
+            title={`${task.task_start
+              .toString()
+              .substring(11, 16)} - ${task.task_end
+              .toString()
+              .substring(11, 16)}`}
           />
 
           <CardContent>
             <Grid container spacing={3}>
               <Grid item xs={12} sx={{ display: "flex", alignItems: "center" }}>
-                <Typography sx={{ textDecoration: isComplete ? "line-through" : "none"}} >{descricao}</Typography>
+                <Typography
+                  sx={{
+                    textDecoration: task.is_completed ? "line-through" : "none",
+                  }}
+                >
+                  {task.description}
+                </Typography>
               </Grid>
             </Grid>
           </CardContent>
         </Card>
       </Grid>
       <Grid item xs={4}>
-        <Typography variant="h2">{titulo}</Typography>
+        <Typography variant="h2">{task.title}</Typography>
       </Grid>
     </Grid>
   );
