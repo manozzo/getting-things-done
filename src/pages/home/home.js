@@ -1,5 +1,4 @@
 import { format, formatISO } from "date-fns";
-import axios from "../../utils/axios";
 import useIsMountedRef from "../../utils/useIsMountedRef";
 import { useCallback, useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
@@ -13,7 +12,6 @@ import {
   InputBase,
 } from "@material-ui/core";
 import { MobileDatePicker } from "@material-ui/lab";
-// import TaskService from '../service/task.service';
 import {
   deleteTask,
   getByDate,
@@ -37,9 +35,9 @@ const meses = [
 
 export default function Home() {
   const paper = {
-    height: "100vh",
+    height: "98vh",
     p: 1,
-    m: 2,
+    m: 1,
     boxShadow:
       "-5px 5px 10px rgba(185, 185, 185, 0.2), 5px -5px 10px rgba(185, 185, 185, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.9), 5px 5px 13px rgba(185, 185, 185, 0.9), inset 1px 1px 2px rgba(255, 255, 255, 0.3), inset -1px -1px 2px rgba(185, 185, 185, 0.5)",
   };
@@ -144,7 +142,7 @@ export default function Home() {
 
     const { data } = await toggleCompleteTask(id);
     taskList[tarefa] = data;
-    console.table(taskList)
+    console.table(taskList);
     setTaskList([...taskList]);
   };
 
@@ -225,7 +223,10 @@ export default function Home() {
                     setDataFiltro(newValue);
                   }}
                   renderInput={(params) => (
-                    <InputBase sx={{ ml: 5 }} {...params} />
+                    <InputBase
+                      sx={{ m: 1, display: "flex" }}
+                      {...params}
+                    />
                   )}
                 />
               </Box>

@@ -29,6 +29,17 @@ export default function Login() {
       "-5px 5px 10px rgba(185, 185, 185, 0.2), 5px -5px 10px rgba(185, 185, 185, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.9), 5px 5px 13px rgba(185, 185, 185, 0.9), inset 1px 1px 2px rgba(255, 255, 255, 0.3), inset -1px -1px 2px rgba(185, 185, 185, 0.5)",
   };
 
+  const buttons = {
+    color: 'black',
+    display: 'flex',
+    px: 2,
+    height: '5vh',
+    mx: "0.6rem",
+    borderRadius: "20px",
+    boxShadow:
+      "-5px 5px 10px rgba(185, 185, 185, 0.2), 5px -5px 10px rgba(185, 185, 185, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.9), 5px 5px 13px rgba(185, 185, 185, 0.9), inset 1px 1px 2px rgba(255, 255, 255, 0.3), inset -1px -1px 2px rgba(185, 185, 185, 0.5)",
+  };
+
   const paper = {
     height: "100vh",
     p: 1,
@@ -60,7 +71,7 @@ export default function Login() {
   return (
     <Paper sx={paper}>
       <Container sx={{ p: 0 }}>
-        <Box display="flex" justifyContent="center" mt={2}>
+        <Box display="flex" justifyContent="center" mt={8}>
           <Title></Title>
         </Box>
         <Box display="flex" justifyContent="center" mt={3}>
@@ -90,8 +101,8 @@ export default function Login() {
           </Box>
         </Box>
         <Box display='flex' justifyContent='center' mt={4}>
-          <Button sx={input}>sign.up</Button>
-          <Button sx={input}>forgot</Button>
+          <Button sx={buttons}>sign.up</Button>
+          <Button sx={buttons}>forgot</Button>
           <Button></Button>
         </Box>
       </Container>

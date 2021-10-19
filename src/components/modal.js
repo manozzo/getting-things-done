@@ -66,9 +66,9 @@ export default function TaskModal({ open, tarefa, handleClose }) {
               }
               let response;
               if (!tarefa.id) {
-                response = await axios.post(`api/task/save`, formData);
+                await axios.post(`api/task/save`, formData);
               } else {
-                response = await axios.post(`api/task/edit/${tarefa.id}`, formData);
+                await axios.post(`api/task/edit/${tarefa.id}`, formData);
               }
               setSubmitting(false);
               resetForm({});
